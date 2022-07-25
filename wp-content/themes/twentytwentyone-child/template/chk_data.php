@@ -4,8 +4,6 @@
 require_once("../../../../wp-config.php");
 require_once("../../../../wp-load.php");
 global $wpdb;
-global $val;
-global $array;
 $post_id = $wpdb->get_results("SELECT value FROM drag_drop");
 $array = array();
 foreach ($post_id as $value) {

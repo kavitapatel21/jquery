@@ -76,12 +76,11 @@
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script>
 		$(document).ready(function() {
-			$('.child').draggable({
+			$('.child').draggable({	
 				//cursor: 'move',
 				helper: "clone",
 				//revert:"false"
 			});
-			
 			/**$("#container1").droppable({
 				drop: function(event, ui) {
 					var itemid = $(event.originalEvent.toElement).attr("itemid");
@@ -95,12 +94,14 @@
 
 			$("#container2").droppable({
 				drop: function(event, ui) {
+					//$(event.originalEvent.toElement).attr("itemid").hide();
 					var itemid = $(event.originalEvent.toElement).html();
 					//alert(itemid);
 					$('.child').each(function() {
 						if ($(this).html() === itemid) {
 							$(this).appendTo("#container2");
 						}
+
 					});
 
 					$.ajax({
@@ -115,19 +116,18 @@
 						}
 					});
 				},
-
 			});
 
 		});
 
-		$.ajax({
+		/**$.ajax({
 			method: "GET",
 			dataType: "json",
 			url: '<?php echo get_stylesheet_directory_uri(); ?>/template/chk_data.php',
 			success: function(result) {
 				alert(result);
 			}
-		});
+		});*/
 	</script>
 </footer><!-- #colophon -->
 

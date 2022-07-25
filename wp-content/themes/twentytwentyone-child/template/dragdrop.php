@@ -9,11 +9,18 @@ get_header();
 <div class="row widgets">
     <div class="text-center col-md-5" id="container1">
         <h2>A</h2>
-        <?php $arr = array('item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6');
-        $count = 0;
+        <?php $arr = array('item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6', 'item 7', 'item 8', 'item 9', 'item 10');
+        global $wpdb;
+        $post_id = $wpdb->get_results("SELECT value FROM drag_drop");
+        // Search for the array key and unset   
+        foreach ($post_id as $value) {
+            $val = $value->value;
+            //echo $val;
+            $keyToDelete = array_search($val, $arr);
+            unset($arr[$keyToDelete]);
+        }
         foreach ($arr as $subcat) {
-            echo ('<div itemid="' . $subcat . '" class="child" id="' . $subcat . '">' . $subcat . '</div>');
-            $count++;
+            echo ('<div itemid="' . $subcat . '" class="child" id="' . $subcat . '">' . $subcat . '</div>');   
         }
         ?>
         <!--<div itemid="itm-1" class="child" id="itm-1">Item 1</div>
@@ -29,21 +36,12 @@ get_header();
     </div>
     <div class="text-center col-md-5" id="container2">
         <h2>B</h2>
-
         <?php
-       
-        $file = get_stylesheet_directory_uri() . '/template/chk_data.php';
-        $content = file_get_contents($file);
-        print_r($content);
-        /**$count = 0;
-        //global $val;
-        //echo $val;
-        //global $array;
-        foreach ($array as $val) {
+        $post_id = $wpdb->get_results("SELECT value FROM drag_drop");
+        foreach ($post_id as $value) {
+            $val = $value->value;
             echo ('<div itemid="' . $val . '" class="child" id="itm-1">' . $val . '</div>');
-            //$itemid='<div itemid="' . $val . '" class="child" id="itm-1">' . $val . '</div>';
-            $count++;
-        }*/
+        } 
         ?>
     </div>
 </div>
