@@ -18,9 +18,9 @@ function wp_result_page_script()
 ?>
     <script>
         jQuery('.app_button').on('click', function() {
-            alert("here");
+            //alert("here");
             // function for add lead event for facebook pixel start
-            console.log("viewcontent for facebook pixel");
+            //console.log("viewcontent for facebook pixel");
             var getsessionemail = "test@gmail.com"; //window.sessionStorage.getItem("step_email");
             var getsessionname = "kavita"; //window.sessionStorage.getItem("step_name");
             var getsessionlastname = "patel"; //window.sessionStorage.getItem("step_lastname");
@@ -299,7 +299,7 @@ function lead_event()
 
 //prevent/block direct access to a pageB
 add_action('template_redirect', function () {
-    if (!is_page(18))//Id of pageB
+    if (!is_page(18)) //Id of pageB
     {
         return;
     }
@@ -309,3 +309,232 @@ add_action('template_redirect', function () {
     wp_redirect(get_home_url());
     exit;
 });
+
+add_action('wp_footer', 'wp_result_page_function');
+function wp_result_page_function()
+{
+?>
+    <script>
+        jQuery('#submit_trial').on('click', function() {
+            //alert("here");
+
+            var getsessionemail = "test@gmail.com"; //window.sessionStorage.getItem("step_email");
+            var getsessionname = "kavita"; //window.sessionStorage.getItem("step_name");
+            var getsessionlastname = "patel"; //window.sessionStorage.getItem("step_lastname");
+            jQuery.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                data: {
+                    'action': 'start_trial_event',
+                    'firstname': getsessionname,
+                    'lastname': getsessionlastname,
+                    'email': getsessionemail,
+                },
+                success: function(response) {
+                    console.log("success");
+                }
+            });
+        });
+    </script>
+<?php
+}
+
+//Start trial
+add_action('wp_ajax_start_trial_event', 'start_trial_event_callback');
+add_action('wp_ajax_nopriv_start_trial_event', 'start_trial_event_callback');
+function start_trial_event_callback()
+{
+    $fname = $_POST['firstname'];
+    $lname = $_POST['lastname'];
+    $email = $_POST['email'];
+    $fullURL = 'https://recovr.com/download/';
+    $stemailhased = hash('SHA256', $email);
+    $stfn = hash('SHA256', $fname);
+    $stln = hash('SHA256', $lname);
+    $sttime = time();
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://graph.facebook.com/v14.0/684242939375861/events?access_token=EAAKYCQBdU44BAABTDUHYd3ZCo1gOigWr1uNNqKWZCMIxKxhfqjEr11IuoM1NG698EBhOpOv6r2GhnNVbsbVNq4wTUy43r9W4MEEl1ZAJT4LZCUhZBZBO7vqqd2nZCejUiES3pdP6kCNEHb2qsBRagU4MZC5QKQFnZAhs0NRH1eyPicnZB7KsoZC17oK%0A',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => '{
+					"data": [
+						{
+							"event_name": "StartTrial",
+							"event_time": "' . $sttime . '",
+							"action_source" : "email",
+							"content_name" : "download-app",
+							"user_data": {
+								"em": [
+									"' . $stemailhased . '"
+								],
+								"fn": [
+									"' . $stfn . '"
+								],
+								"ln": [
+									"' . $stln . '"
+								],
+							},   
+							"event_source_url"  : "' . $fullURL . '",					
+						}
+					]
+				}',
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    //return true;
+}
+
+
+add_action('wp_ajax_add_entry', 'add_stripe_entry');
+add_action('wp_ajax_nopriv_add_entry', 'add_stripe_entry');
+function add_stripe_entry()
+{
+    //echo "here";
+    $fname = $_POST['firstname'];
+    $lname = $_POST['lastname'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $cardname = $_POST['cardname'];
+    $cardnumber = $_POST['cardnumber'];
+    $month = $_POST['month'];
+    $year = $_POST['year'];
+    $cvv = $_POST['cvv'];
+    $card_type = 'card';
+    $result_plan = 'price_1L7z5vGSLZI5qKJBLeWia0pY';
+    //Curl start for check customer already exist or not
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.stripe.com/v1/customers',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_POSTFIELDS => 'email=' . $email . '',
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: Bearer sk_test_51KMnalGSLZI5qKJB7ANMSnomf1xE8BcIIBotP1mMtpnpiCj0DMVVhlBrLDX3Eg20CURzSjUcR9GhTn0NTbNwbcxG00syBBR6Wi',
+            'Content-Type: application/x-www-form-urlencoded'
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $result = json_decode($response, TRUE);
+    //print_r($result);
+    //Curl end for check customer exist or not
+
+    if ($result['data'][0]['id']) {
+        $customer_id = $result['data'][0]['id'];
+        //echo 'customer already exist';
+    } else {
+        //echo 'create cutomer';
+        // Curl Call For Create Customer in strip start 
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.stripe.com/v1/customers',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'name=' . $fname . ' & email=' . $email . '',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer sk_test_51KMnalGSLZI5qKJB7ANMSnomf1xE8BcIIBotP1mMtpnpiCj0DMVVhlBrLDX3Eg20CURzSjUcR9GhTn0NTbNwbcxG00syBBR6Wi',
+                'Content-Type: application/x-www-form-urlencoded'
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $result = json_decode($response, TRUE);
+        $customer_id = $result['id'];
+        // Curl Call For Create Customer in strip end 
+    }
+
+    // For Create a PaymentMethod START
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.stripe.com/v1/payment_methods',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => 'type=' . $card_type . '&card%5Bnumber%5D=' . $cardnumber . '&card%5Bexp_month%5D=' . $month . '&card%5Bexp_year%5D=' . $year . '&card%5Bcvc%5D=' . $cvv . '',
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: Bearer sk_test_51KMnalGSLZI5qKJB7ANMSnomf1xE8BcIIBotP1mMtpnpiCj0DMVVhlBrLDX3Eg20CURzSjUcR9GhTn0NTbNwbcxG00syBBR6Wi',
+            'Content-Type: application/x-www-form-urlencoded'
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $result = json_decode($response, TRUE);
+    $payment_id = $result['id'];
+    if ($result['id'] == '') {
+        echo 'false';
+        exit;
+    }
+    // print_r($result);
+    // For Create a PaymentMethod END
+
+    //Attach a PaymentMethod to a Customer STRT
+    // IN URL You must pass Create a PaymentMethod response id like pm_1L8kAqGSLZI5qKJBrDDH59eQ and customer id in post data
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.stripe.com/v1/payment_methods/' . $payment_id . '/attach',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => 'customer=' . $customer_id,
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: Bearer sk_test_51KMnalGSLZI5qKJB7ANMSnomf1xE8BcIIBotP1mMtpnpiCj0DMVVhlBrLDX3Eg20CURzSjUcR9GhTn0NTbNwbcxG00syBBR6Wi',
+            'Content-Type: application/x-www-form-urlencoded'
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $result = json_decode($response, TRUE);
+    $createdDate = $result['created'];
+    $timestamp = strtotime('+7 days', $createdDate);
+    //print_r($result);
+    //die;
+    //Attach a PaymentMethod to a Customer END
+
+    //Create a subscription START
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.stripe.com/v1/subscriptions',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => 'customer=' . $customer_id . '&items%5B0%5D%5Bprice%5D=' . $result_plan . '&default_payment_method=' . $payment_id . '&trial_end=' . $timestamp . '',
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: Bearer sk_test_51KMnalGSLZI5qKJB7ANMSnomf1xE8BcIIBotP1mMtpnpiCj0DMVVhlBrLDX3Eg20CURzSjUcR9GhTn0NTbNwbcxG00syBBR6Wi',
+            'Content-Type: application/x-www-form-urlencoded'
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+}

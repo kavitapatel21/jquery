@@ -18,6 +18,7 @@ License:    GNU General Public License v2 or later
 }
 
 .widgets {
+    
     display: flex;
     justify-content: space-around;
 }
