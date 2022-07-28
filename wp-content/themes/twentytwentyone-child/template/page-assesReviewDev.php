@@ -237,11 +237,17 @@
             margin-bottom: 24px !important;
         }
     }
+
     .loader {
         display: none;
         color: red;
     }
+
     .error {
+        color: red;
+    }
+
+    #idname {
         color: red;
     }
 </style>
@@ -388,7 +394,9 @@
                                     </div>
                                     <div id="idname"></div>
                                     <div class="loader">
-                                            <center><div class="loading-image">Please wait...</div></center>
+                                        <center>
+                                            <div class="loading-image">Please wait...</div>
+                                        </center>
                                     </div>
                         </form>
                     </div>
@@ -521,7 +529,7 @@
                         'year': year,
                         'cvv': cvv,
                     },
-                    beforeSend: function(){
+                    beforeSend: function() {
                         jQuery('.loader').show();
                     },
                     success: function(response) {

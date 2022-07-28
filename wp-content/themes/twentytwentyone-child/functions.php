@@ -294,21 +294,7 @@ function lead_event()
     $subscriptionPurchaseDate = date('Y-m-d H:i:s', $result_subscriptions['current_period_end']);
     print_r($response);
     //Create a subscription END
-
 }
-
-//prevent/block direct access to a pageB
-add_action('template_redirect', function () {
-    if (!is_page(18)) //Id of pageB
-    {
-        return;
-    }
-    if (wp_get_referer() === 'http://localhost/recovr/pagea/') {
-        return;
-    }
-    wp_redirect(get_home_url());
-    exit;
-});
 
 add_action('wp_footer', 'wp_result_page_function');
 function wp_result_page_function()
@@ -538,3 +524,79 @@ function add_stripe_entry()
     $response = curl_exec($curl);
     curl_close($curl);
 }
+
+
+//PHP server-side validation
+add_action('wp_ajax_php_validation', 'php_server_side_validation');
+add_action('wp_ajax_nopriv_php_validation', 'php_server_side_validation');
+function php_server_side_validation()
+{
+    $errorMSG = "";
+
+
+    /* NAME */
+    if (empty($_POST["name"])) {
+        $errorMSG = "<li>Name is required</<li>";
+    } else {
+        $name = $_POST["name"];
+    }
+
+
+    /* EMAIL */
+    if (empty($_POST["email"])) {
+        $errorMSG .= "<li>Email is required</li>";
+    } else if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+        $errorMSG .= "<li>Invalid email format</li>";
+    } else {
+        $email = $_POST["email"];
+    }
+
+    /* PHONE */
+    if (empty($_POST["c"])) {
+        $errorMSG .= "<li>Phoneno is required</li>";
+    } else if (!preg_match("/^[0-9-+.' ]*$/",($_POST["phoneno"]))) {
+        $errorMSG .= "<li>Invalid phone number format</li>";
+    } else {
+        $phoneno = $_POST["phoneno"];
+    }
+
+    /* MSG SUBJECT */
+    if (empty($_POST["msg_subject"])) {
+        $errorMSG .= "<li>Subject is required</li>";
+    } else {
+        $msg_subject = $_POST["msg_subject"];
+    }
+
+
+    /* MESSAGE */
+    if (empty($_POST["message"])) {
+        $errorMSG .= "<li>Message is required</li>";
+    } else {
+        $message = $_POST["message"];
+    }
+
+
+    if (empty($errorMSG)) {
+        $msg = "Name: " . $name . ", Email: " . $email . ",Phoneno: " . $phoneno . ", Subject: " . $msg_subject . ", Message:" . $message;
+        echo json_encode(['code' => 200, 'msg' => $msg]);
+        exit;
+    }
+    echo json_encode(['code' => 404, 'msg' => $errorMSG]);
+}
+
+
+//prevent/block direct access to a pageB and pageD
+add_action('template_redirect', function () {
+    if (!is_page(18) && !is_page(39)) //Id of pageB and pageD
+    {
+        return;
+    }
+    if (wp_get_referer() === 'http://localhost/recovr/pagea/') {
+        return;
+    }
+    if (wp_get_referer() === 'http://localhost/recovr/page-c/') {
+        return;
+    }    
+    wp_redirect(get_home_url());
+    exit;
+});
