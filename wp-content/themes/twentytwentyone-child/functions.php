@@ -554,7 +554,7 @@ function php_server_side_validation()
     /* PHONE */
     if (empty($_POST["c"])) {
         $errorMSG .= "<li>Phoneno is required</li>";
-    } else if (!preg_match("/^[0-9-+.' ]*$/",($_POST["phoneno"]))) {
+    } else if (!preg_match("/^[0-9-+.' ]*$/", ($_POST["phoneno"]))) {
         $errorMSG .= "<li>Invalid phone number format</li>";
     } else {
         $phoneno = $_POST["phoneno"];
@@ -596,7 +596,8 @@ add_action('template_redirect', function () {
     }
     if (wp_get_referer() === 'http://localhost/recovr/page-c/') {
         return;
-    }    
+    }
     wp_redirect(get_home_url());
     exit;
 });
+
