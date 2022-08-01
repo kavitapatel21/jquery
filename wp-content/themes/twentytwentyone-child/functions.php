@@ -601,3 +601,30 @@ add_action('template_redirect', function () {
     exit;
 });
 
+
+add_action('wp_ajax_search_product_name', 'fetch_product_name');
+add_action('wp_ajax_nopriv_search_product_name', 'fetch_product_name');
+function fetch_product_name()
+{
+    //echo 'here';
+    //die;
+    $keyword = $_POST['keyword'];  
+    global $wpdb;
+    // escape values passed to db to avoid sql-injection
+    $depts = $wpdb->get_results("SELECT * FROM `live_product` WHERE 'product_name' LIKE $keyword ORDER BY product_name ASC");
+    print_r($depts);
+    die;
+    $suggestions = array();
+    $data = array();
+    foreach($depts as $row) {
+        $suggestions[] = $row->firm_name;
+        $data[] = $row->firm_id;
+    }
+    $response = array(
+        'keyword' => $keyword,
+        'value' => $suggestions,
+        'data' => $data,
+    );
+
+   echo json_encode ($response);
+}

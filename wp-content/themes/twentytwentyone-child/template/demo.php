@@ -71,13 +71,11 @@ Template Post Type: post, page, my-post-type;
         box-sizing: content-box;
         max-width: 0px;
         text-align: center;
-        font-weight: 450;  
+        font-weight: 450;
     }
-
-   
 </style>
 
-<form action="" id="" method="" class='category-form'>
+<form action="" id="" method="post" class='category-form'>
     <input for="search" type="text" id="search" placeholder="Keyword" autocomplete="off" class="search-input">
     <div id="mydata" class="custom-my-data"></div>
     <select name="child_id" class="search-drpdwn" id="">
@@ -94,41 +92,36 @@ Template Post Type: post, page, my-post-type;
         ?>
 
     </select>
-    <button type="submit" name="category" class="search-btn">Go</button>
+    <input type="button" name="category" class="search-btn" value="Go" id="submit">
 </form>
 
-    <div class="row justify-content-center">
-        <div class="col-sm one" style="margin-right: 5px;max-width: 25px;">0-9</div>
-        <div class="col-sm">A</div>
-        <div class="col-sm">B</div>
-        <div class="col-sm">C</div>
-        <div class="col-sm">D</div>
-        <div class="col-sm">E</div>
-        <div class="col-sm">F</div>
-        <div class="col-sm">G</div>
-        <div class="col-sm">H</div>
-        <div class="col-sm">I</div>
-        <div class="col-sm">J</div>
-        <div class="col-sm">K</div>
-        <div class="col-sm">L</div>
-        <div class="col-sm">M</div>
-        <div class="col-sm">N</div>
-        <div class="col-sm">O</div>
-        <div class="col-sm">P</div>
-        <div class="col-sm">Q</div>
-        <div class="col-sm">R</div>
-        <div class="col-sm">S</div>
-        <div class="col-sm">T</div>
-        <div class="col-sm">U</div>
-        <div class="col-sm">V</div>
-        <div class="col-sm">W</div>
-        <div class="col-sm">X</div>
-        <div class="col-sm">V</div>
-        <div class="col-sm">Y</div>
-        <div class="col-sm">Z</div>
-
-    </div>
+<div class="row justify-content-center">
+    <div class="col-sm one" style="margin-right: 5px;max-width: 25px;">0-9</div>
+    <?php
+    foreach (range('A', 'Z') as $char) {
+    ?>
+        <div class="col-sm"><?php echo $char; ?></div>
+    <?php } ?>
+</div>
 
 </body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 
 </html>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+<script type="text/javascript">
+    jQuery('#submit').on('click', function() {
+
+        jQuery.ajax({
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            type: 'post',
+            data: {
+                action: 'search_product_name',
+                keyword: jQuery('#search').val(),
+            },
+            success: function(data) {
+                console.log("success");
+            }
+        });
+
+    });
+</script>
