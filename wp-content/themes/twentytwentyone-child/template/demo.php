@@ -94,6 +94,7 @@ Template Post Type: post, page, my-post-type;
     </select>
     <input type="button" name="category" class="search-btn" value="Go" id="submit">
 </form>
+<div id="result" style="margin-left: 10px;"></div>
 
 <div class="row justify-content-center">
     <div class="col-sm one" style="margin-right: 5px;max-width: 25px;">0-9</div>
@@ -108,20 +109,83 @@ Template Post Type: post, page, my-post-type;
 
 </html>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript">
-    jQuery('#submit').on('click', function() {
+    jQuery(function() {
 
-        jQuery.ajax({
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-            type: 'post',
-            data: {
-                action: 'search_product_name',
-                keyword: jQuery('#search').val(),
-            },
-            success: function(data) {
-                console.log("success");
+        jQuery("#search").keyup(function() {
+            var term = jQuery("#search").val();
+            //jQuery("#result").html('');
+            jQuery.ajax({
+                type: "post",
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                data: {
+                    action: "auto_complete_searching",
+                    term: term
+                },
+                success: function(data) {
+                    jQuery.each(data, function(key, value) {
+                        //alert(value);
+                        if(jQuery("#search").val() == ''){
+                            jQuery("#result").html('')
+                        }
+                        else if (value == '') {
+                            jQuery("#result").text("Result Not Found");
+
+                        } else {
+                            jQuery("#result").html('');
+                            for (var i = 0; i < value.length; i++) {
+                                jQuery("#result").append('<ul>' + value[i] + '</ul>');
+                                //alert(value[i]);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        jQuery('#result').on('click', 'ul', function() {
+            var click_text = jQuery(this).text().split('|');
+            jQuery('#search').val(jQuery.trim(click_text[0]));
+            jQuery("#result").html('');
+        });
+    });
+
+    /**jQuery(document).ready(function($) {
+            //alert('here');
+        $('#search').autocomplete({
+
+            // add the way to the file with database query
+
+            serviceUrl: '<?php echo get_stylesheet_directory_uri(); ?>/template/autocomplete.php',
+
+            // what happens when user chooses autocomlete suggestion
+
+            onSelect: function(suggestion) {
+                alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
             }
         });
+    });*/
 
-    });
+
+    /**$('#search').autocomplete({
+        source: function(request, response) {
+            // input query 
+            var term = request.term;
+            //alert(term);
+            $.ajax({
+                type: "POST",
+                url: "<?php echo get_stylesheet_directory_uri(); ?>/template/autocomplete.php",
+                // "POST" `term` to server
+                data: {
+                    autocomplete: term
+                },
+            }).then(function(data) {
+                response(data)
+            }, function error(jqxhr, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown)
+            });
+        }
+    }, {
+        minLength: 1
+    });*/
 </script>
