@@ -125,7 +125,7 @@ Template Post Type: post, page, my-post-type;
                 },
                 success: function(data) {
                     jQuery.each(data, function(key, value) {
-                        //alert(value);
+                        //alert( key + ": " + value );
                         if(jQuery("#search").val() == ''){
                             jQuery("#result").html('')
                         }
