@@ -44,7 +44,7 @@
     }
 
     .br-three {
-        border-radius: 4px;
+        border-radius: 0px;
     }
 
     .lbl-card-detail {
@@ -243,13 +243,22 @@
         color: red;
     }
 
-    .error {
-        color: red;
-    }
-
     #idname {
         color: red;
     }
+
+    /**Hide jquery validation error message & red border on inputbox 
+    .error {
+        border-color: red;
+    }
+
+    label.error {
+        display: none !important;
+    }
+
+    label#expiry-error {
+        display: none !important;
+    }*/
 </style>
 <div class="main-result d-flex flex-wrap">
     <div class="demo-one">
@@ -384,7 +393,7 @@
                                     <div class="row d-flex justify-content-md-between">
                                         <div class="col-md-6">
                                             <label class="mt-4">
-                                                <input type="checkbox" value=""> Check here to indicate that you have read and agree to recovr's <a href="#" class="color"> <b>Terms Of Services </b></a></label>
+                                                <input type="checkbox" value="" name="terms"> Check here to indicate that you have read and agree to recovr's <a href="#" class="color"> <b>Terms Of Services </b></a></label>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group mt-4 d-flex justify-content-center justify-content-md-end">
@@ -419,6 +428,7 @@
 
 <script>
     jQuery(document).on('click', '#btn-submit', function(e) {
+
         jQuery("#myassesForm").validate({
             rules: {
                 firstname: {
@@ -462,13 +472,17 @@
                     maxlength: 3,
                     minlength: 3
                 },
+                terms: {
+                    required: true
+
+                },
             },
             messages: {
                 firstname: {
-                    required: 'Please enter first name'
+                    required: 'Please enter first name & lastname'
                 },
                 lastname: {
-                    required: 'Please enter last name'
+                    required: 'Please enter first name & lastname'
                 },
                 email: {
                     required: 'Please enter email'
@@ -501,7 +515,16 @@
                     minlength: "Please enter 3 digit Number.",
                     maxlength: "Please enter 3 digit Number."
                 },
+                terms: {
+						required: 'Please check the checkbox'
+
+					}
             },
+            groups: {
+            onemsg: "firstname lastname"//validate multiple fields with one error
+        },
+           
+
             submitHandler: function(form) {
                 var fname = jQuery('#firstname').val();
                 var lname = jQuery('#lastname').val();
@@ -542,7 +565,10 @@
                 });
             }
         });
-
+        /**var attribute= $('#myassesForm').attr('novalidate');
+            if (attribute) {
+                alert('here');
+            }*/
     });
 </script>
 

@@ -386,6 +386,7 @@ add_action('wp_ajax_nopriv_add_entry', 'add_stripe_entry');
 function add_stripe_entry()
 {
     //echo "here";
+    //die;
     $fname = $_POST['firstname'];
     $lname = $_POST['lastname'];
     $email = $_POST['email'];
