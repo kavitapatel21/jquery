@@ -129,6 +129,15 @@
 			}
 		});*/
 	</script>
+
+<script>
+var random = Math.floor(Math.random() * 100000000);
+const value = ('; '+document.cookie).split(`; cookie_id=`).pop().split(';')[0];
+if(value == ''){
+document.cookie = "cookie_id=" +random;
+console.log(document.cookie);
+}
+</script>
 </footer><!-- #colophon -->
 
 </div><!-- #page -->

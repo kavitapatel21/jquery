@@ -615,5 +615,150 @@ function auto_complete_searching()
         array_push($items, $get_result->product_name);
     }
     //echo json_encode($items);
-    wp_send_json_success( $items );
+    wp_send_json_success($items);
 }
+
+function add_theme_menu_item()
+{
+    add_menu_page("Theme Option", "Theme Option", "manage_options", "theme-option", "theme_settings_page", null, 99);
+}
+
+add_action("admin_menu", "add_theme_menu_item");
+
+function theme_settings_page()
+{
+?>
+    <div class="wrap">
+        <h1>Theme Option</h1>
+        <form method="post" action="options.php">
+            <?php
+            settings_fields("section");
+            do_settings_sections("theme-options");
+            submit_button();
+            ?>
+        </form>
+    </div>
+<?php
+}
+
+function main_logo_display()
+{
+?>
+    <input type="file" name="main_logo" />
+    <?php echo get_option('main_logo'); ?>
+<?php
+}
+
+
+function sticky_logo_display()
+{
+?>
+    <input type="file" name="sticky_logo" />
+    <?php echo get_option('sticky_logo'); ?>
+<?php
+}
+
+function favicon_display()
+{
+?>
+    <input type="file" name="favicon" />
+    <?php echo get_option('favicon'); ?>
+<?php
+}
+
+function display_footer_copyright()
+{
+?>
+    <input type="text" name="footer_copyright" id="footer_copyright" value="<?php echo get_option('footer_copyright'); ?>" />
+<?php
+}
+
+function display_theme_panel_fields()
+{
+    add_settings_section("section", "All Settings", null, "theme-options");
+
+    add_settings_field("main_logo", "Main Logo", "main_logo_display", "theme-options", "section");
+    register_setting("section", "main_logo");
+
+    add_settings_field("sticky_logo", "Sticky Logo", "sticky_logo_display", "theme-options", "section");
+    register_setting("section", "sticky_logo");
+
+    add_settings_field("favicon", "Favicon", "favicon_display", "theme-options", "section");
+    register_setting("section", "favicon");
+
+    add_settings_field("footer_copyright", "Footer Copyright", "display_footer_copyright", "theme-options", "section");
+    register_setting("section", "footer_copyright");
+}
+add_action("admin_init", "display_theme_panel_fields");
+
+
+
+/**add_action("init", "eg_create_sitemap");
+function eg_create_sitemap()
+{
+    $postsForSitemap = get_posts(array(
+        'numberposts' => -1,
+        'orderby' => 'modified',
+        'post_type'  => array('post'),
+        'order'    => 'ASC',
+        'post_status'  => 'publish'
+    ));
+
+    //Generate xml file on main project folder(ABSPATH)
+    $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $sitemap .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">' . "\n";
+    /*$sitemap .= '<?xml-stylesheet type="text/xsl" href="http://sitehere.com/sitemap.xsl"?>'."\n";*/
+
+   /**foreach ($postsForSitemap as $post) {
+        setup_postdata($post);
+        $post_id = $post->ID;
+        $postdat = $post->post_date;
+        $postdate = explode(" ", $postdat);
+        $postdatee = $postdate[0] . "T" . $postdate[1] . "-08:00";
+        $postContent = $post->post_excerpt;
+        $postName = $post->post_name;
+        $posttitle = $post->post_title;
+
+        $abspath = get_site_url();
+        $sitemap .= '<url>' . "\n" .
+
+            "\t" . '<video:video>' . "\n" .
+            "\t\t" . '<video:title>' . $posttitle . '</video:title>' . "\n" .
+            "\t\t" . '<video:publication_date>' . $postdatee . '</video:publication_date>' . "\n" .
+            '</url>' . "\n\n";
+    }
+    $sitemap .= '</urlset>';
+    $fp = fopen(ABSPATH . "sitemap.xml", 'w');
+    fwrite($fp, $sitemap);
+    fclose($fp);
+
+    //Download xml file
+    /**header('Content-type: text/xml');
+    header('Content-Disposition: attachment; filename="text.xml"');
+    echo $sitemap;
+    exit();
+}*/
+
+
+
+add_action('init', 'enroll_student', 10, 1);
+function enroll_student( $order_id ) {
+
+$sitemap = '<?xml version="1.0" encoding="utf-8"?>'."\n";      
+//$path = ABSPATH;
+//echo $path;       
+$abspath = ABSPATH.'wp-content/pointex';
+$sitemap .= '<Export_Bfast_POINTEX>'."\n".
+
+	"\t".'<Entete_Commande>'."\n".
+	"\t\t"."<Id_commande>".  $order_id ."</Id_commande>"."\n".
+	"\t".'</Entete_Commande>'."\n".  
+	 
+'</Export_Bfast_POINTEX>'."\n\n";
+
+  $filename = 'order_'.date('m-d-Y_hia').'.xml';
+  $fp = fopen($abspath .'/'.$filename, 'w');
+  fwrite($fp, $sitemap);
+  fclose($fp);
+}
+?>
